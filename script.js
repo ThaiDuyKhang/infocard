@@ -1,17 +1,17 @@
-const toDataURL = url =>
+const toDataURL = (url) =>
   fetch(url)
-  .then(response => response.blob())
-  .then(
-    blob =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(blob);
-    })
-  );
+    .then((response) => response.blob())
+    .then(
+      (blob) =>
+        new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        })
+    );
 
-const readFile = file => {
+const readFile = (file) => {
   return new Promise((resolve, reject) => {
     const fr = new FileReader();
     fr.onerror = reject;
@@ -23,11 +23,9 @@ const readFile = file => {
 };
 
 const getBackgrounds = () => {
-  const backgrounds = [
-    "/imgs/1.jpeg", "/imgs/2.jpeg", "/imgs/3.jpeg", "/imgs/4.jpeg", "/imgs/5.jpeg", "/imgs/6.jpeg"
-  ];
+  const backgrounds = ["/imgs/1.jpg"];
 
-  return Promise.all(backgrounds.map(bg => toDataURL(bg)));
+  return Promise.all(backgrounds.map((bg) => toDataURL(bg)));
 };
 
 const fonts = [
@@ -38,7 +36,7 @@ const fonts = [
   "Roboto Slab",
   "Lora",
   "Verdana",
-  "Tahoma"
+  "Tahoma",
 ];
 
 const app = new Vue({
@@ -48,23 +46,34 @@ const app = new Vue({
     logo: "/imgs/logo.png",
     logoSize: 250,
 
-    url: "https://linktr.ee/codedao",
+    url: "",
     qrCode: undefined,
-    qrSize: 275,
+    qrSize: 110,
 
-    name: "Phạm Huy Hoàng",
-    fontSize: 85,
+    workUnit: "",
     fonts: fonts,
-    font: fonts[0],
+    font: fonts[3],
+
+    formation: "",
+    fonts: fonts,
+    font: fonts[3],
+
+    position: "",
+    fonts: fonts,
+    font: fonts[3],
+
+    name: "",
+    fonts: fonts,
+    font: fonts[3],
 
     backgrounds: [],
-    background: "white"
+    background: "white",
   },
   mounted: async function () {
     const qrCode = new QRCode("qr-code", {
       text: this.url,
       width: this.qrSize,
-      height: this.qrSize
+      height: this.qrSize,
     });
     this.qrCode = qrCode;
 
@@ -76,7 +85,7 @@ const app = new Vue({
     url: function (value) {
       this.qrCode.clear();
       this.qrCode.makeCode(value);
-    }
+    },
   },
   methods: {
     changeLogo: async function (event) {
@@ -102,7 +111,7 @@ const app = new Vue({
       this.qrCode = new QRCode("qr-code", {
         text: this.url,
         width: this.qrSize,
-        height: this.qrSize
+        height: this.qrSize,
       });
     },
     exportCard: async () => {
@@ -114,14 +123,12 @@ const app = new Vue({
       document.body.appendChild(img);
 
       const link = document.createElement("a");
-      link.download = "taotap-card.png";
+      link.download = "mhx-card.png";
       link.href = dataUrl;
       link.click();
     },
     exportPDF: async () => {
-      const {
-        jsPDF
-      } = window.jspdf;
+      const { jsPDF } = window.jspdf;
 
       await domtoimage.toPng(document.querySelector("#card")); // Lol font only work in 2nd times
       const dataUrl = await domtoimage.toPng(document.querySelector("#card"));
@@ -145,10 +152,10 @@ const app = new Vue({
       doc.line(0, 0, 0, 297);
       doc.line(210, 0, 210, 297);
       doc.line(0, 297, 210, 297);
-      doc.save("taotap.pdf");
+      doc.save("mxh-card.pdf");
     },
     setBackground: function (bg) {
       this.background = bg;
-    }
-  }
+    },
+  },
 });

@@ -1,90 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <!--
-      This is the page head - it contains info the browser uses to display the page
-      You won't see what's in the head in the page
-      Scroll down to the body element for the page content
-    -->
-
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="shortcut icon"
-      type="image/jpg"
-      href="https://cdn.glitch.com/d08bb326-e251-4744-9266-f454d653c7c1%2Ffavicon.png?v=1624373448629"
-    />
 
     <!-- Import the webpage's stylesheet -->
     <link rel="stylesheet" href="/font.css" />
     <link rel="stylesheet" href="/style.css" />
-    <title>Tao Táp - Gặp ai cũng Táp</title>
+    <title>Tạo thông tin cá nhân - Mùa hè xanh</title>
   </head>
 
   <body>
     <div id="app">
-      <div
-        id="card"
-        v-bind:style="{ 'background-image': 'url(' + background + ')' }"
-      >
-        <div id="overlay"></div>
-        <img
-          v-if="showLogo"
-          v-bind:src="logo"
-          v-bind:style="{ 'width': logoSize + 'px' }"
-          id="logo"
-        />
-
-        <div id="qr-code"></div>
-
-        <p id="name">
-          <span
-            v-bind:style="{ 'font-size': fontSize + 'px', 'font-family': font }"
-            id="name-content"
-            >{{name}}</span
-          >
-          <span class="hack">_</span>
-        </p>
-      </div>
-
       <div id="form-card">
         <div>
-          <h5>1. Logo</h5>
+          <h5>1. Chọn hình đại diện</h5>
           <div>
-            <label>Đổi logo (Ảnh PNG trong suốt, size &gt; 250px) </label>
             <input type="file" @change="changeLogo" accept="image/*" />
-            <button v-on:click="showLogo = !showLogo">
-              Ẩn/Hiện Logo
-            </button>
-            <button v-on:click="logoSize -= 10">
-              - Thu nhỏ
-            </button>
-            <button v-on:click="logoSize += 10">
-              + Phóng to
-            </button>
           </div>
+        </div>
+        <div class="infomationInput">
+          <h5>4. Thông tin</h5>
+          <input v-model="name" placeholder="Họ và tên" id="txt-name" />
+          <input v-model="workUnit" placeholder="Đơn vị" id="txt-workUnit" />
+          <input
+            v-model="formation"
+            placeholder="Đội hình"
+            id="txt-formation"
+          />
+          <input v-model="position" placeholder="Mặt trận" id="txt-position" />
+        </div>
+
+        <div class="qrcode">
+          <h5>2. QR Code</h5>
+          <input v-model="url" placeholder="Nhập đường dẫn url" id="url" />
         </div>
 
         <div>
-          <h5>
-            2. QR Code (Dùng
-            <a href="https://linktr.ee" target="_blank">linktree</a> hoặc
-            <a href="https://instabio.cc" target="_blank">instabio</a> hoặc web
-            tự code)
-          </h5>
-          <div>
-            <input v-model="url" placeholder="URL" id="url" />
-            <button v-on:click="updateQR(-10)">
-              - Thu nhỏ
-            </button>
-            <button v-on:click="updateQR(10)">
-              + Phóng to
-            </button>
-          </div>
-        </div>
-
-        <div>
-          <h5>3. Ảnh nền</h5>
+          <h5>3. Ảnh nền (900 x 636px)</h5>
           <div id="background-select">
             <img
               v-bind:src="bg"
@@ -92,41 +45,65 @@
               v-on:click="setBackground(bg)"
             />
           </div>
-          <label>Đổi ảnh nền (Ảnh tỷ lệ 11:7, size &gt; 1100px X 700px) </label>
           <input type="file" @change="changeCustomBg" accept="image/*" />
         </div>
 
-        <div>
-          <h5>4. Thông tin thẻ (Tên dài quá có thể thu nhỏ chữ)</h5>
-          <input v-model="name" placeholder="Tên trên thẻ" id="txt-name" />
-          <select v-model="font">
-            <option v-for="fnt in fonts" :value="fnt">Font: {{fnt}}</option>
-          </select>
-
-          <button v-on:click="fontSize -= 2">
-            - Thu nhỏ
-          </button>
-          <button v-on:click="fontSize += 2">
-            + Phóng to
-          </button>
+        <div class="exportBtn">
+          <button v-on:click="exportCard">Lưu file ảnh</button>
+          <button v-on:click="exportPDF">Lưu file pdf</button>
         </div>
+      </div>
+      <div
+        id="card"
+        v-bind:style="{ 'background-image': 'url(' + background + ')' }"
+      >
+        <div id="overlay"></div>
+        <img v-if="showLogo" v-bind:src="logo" id="logo" />
 
-        <div>
-          <h5>5. Xuất file</h5>
-          <button v-on:click="exportCard">
-            Tạo thẻ (Ảnh)
-          </button>
-          <button v-on:click="exportPDF">
-            Tạo thẻ (PDF)
-          </button>
+        <div id="qr-code"></div>
 
-          <p>
-            Nếu xuất file ảnh, các bạn in màu với <b>độ phân giải 300dpi</b> sẽ
-            được ảnh <b>tầm 8.7cm x 5.5cm</b>. <br />
-            Nếu xuất file PDF thì đem đi màu A4, chọn <b>Fit to Paper</b> khi in
-            là ok. <br />
-            Dán ảnh này lên thẻ NFC trắng <b>(8.55cm X 5.4cm)</b> là được nhé!
-          </p>
+        <div class="infomation">
+          <div class="infomation__name">
+            <p id="name">
+              <span>Họ và tên:</span>
+              <span
+                v-bind:style="{ 'font-size': fontSize + 'px', 'font-family': font }"
+                id="name-content"
+                >{{name}}</span
+              >
+              <!-- <span class="hack">_</span> -->
+            </p>
+          </div>
+          <div class="infomation__workUnit">
+            <p id="workUnit">
+              <span>Đơn vị:</span>
+              <span
+                v-bind:style="{ 'font-size': fontSize + 'px', 'font-family': font }"
+                id="workUnit-content"
+                >{{workUnit}}</span
+              >
+            </p>
+          </div>
+          <div class="infomation__formation">
+            <p id="formation">
+              <span>Đội hình:</span>
+              <span
+                v-bind:style="{ 'font-size': fontSize + 'px', 'font-family': font }"
+                id="formation-content"
+                >{{formation}}</span
+              >
+            </p>
+          </div>
+          <div class="infomation__position">
+            <p id="position">
+              <span>Mặt trận:</span>
+              <span
+                v-bind:style="{ 'font-size': fontSize + 'px', 'font-family': font }"
+                id="position-content"
+                >{{position}}</span
+              >
+            </p>
+          </div>
         </div>
       </div>
     </div>
